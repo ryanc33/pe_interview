@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE Interview Practice Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .game-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .question-card {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-top: 0;
+        }
+        h2 {
+            color: #3498db;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px 10px 0;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .scenario {
+            font-style: italic;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 3px solid #3498db;
+            margin-bottom: 20px;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .good-feedback {
+            background-color: #d4edda;
+            border-left: 3px solid #28a745;
+        }
+        .neutral-feedback {
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+        }
+        .poor-feedback {
+            background-color: #f8d7da;
+            border-left: 3px solid #dc3545;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        #practiceButton {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            background-color: #2ecc71;
+        }
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .answer-option {
+            background-color: #f1f1f1;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .answer-option:hover {
+            background-color: #e0e0e0;
+        }
+        .selected {
+            background-color: #d5e8fd;
+            border-left: 3px solid #3498db;
+        }
+        .key-phrase {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        #progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #progress-bar {
+            width: 0;
+            height: 10px;
+            background-color: #3498db;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        .scorecard {
+            display: none;
+            text-align: center;
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #eaecee;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .recommendation {
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .timer {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>PE Interview Practice Game</h1>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="gamesPlayed">0</div>
+                <div class="stat-label">Games</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="highScore">0</div>
+                <div class="stat-label">High Score</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="avgScore">0</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+        </div>
+
+        <div id="start-screen" class="active">
+            <h2>Ready to Practice Your PE Interview Skills?</h2>
+            <p>This game will simulate common questions and scenarios you might encounter during your interview with Rebecca Pigula at CIL Management.</p>
+            <p>For each scenario, choose the response that best demonstrates your regulatory expertise and its value to PE firms.</p>
+            <button id="startButton">Start Practice</button>
+        </div>
+
+        <div id="game-screen" class="question-card">
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div class="timer" id="timer">Time: 30s</div>
+            <div class="scenario" id="scenario"></div>
+            <div class="answer-options" id="answerOptions">
+                <!-- Answer options will be inserted here -->
+            </div>
+            <button id="submitButton" style="display: none;">Submit Answer</button>
+            <div class="feedback" id="feedback"></div>
+            <button id="nextButton" style="display: none;">Next Question</button>
+        </div>
+
+        <div id="scorecard" class="scorecard">
+            <h2>Practice Complete!</h2>
+            <div class="score-circle" id="finalScore">0</div>
+            <p>Your messaging effectiveness score</p>
+            <div id="scoreBreakdown"></div>
+            <div class="recommendation" id="recommendation"></div>
+            <button id="practiceButton">Practice Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game data
+        const scenarios = [
+            {
+                question: "Rebecca asks: 'Tell me about your background and how it relates to what we do at CIL.'",
+                options: [
+                    {
+                        text: "I've been at CDC for 14 years working in healthcare policy and regulatory analysis. I assess how regulations impact operations and strategy—the same core analysis PE firms need for due diligence and valuation, just applied to different outcomes.",
+                        score: 10,
+                        feedback: "Excellent! You directly translated your experience into business value, using PE terminology like 'due diligence' and 'valuation.'"
+                    },
+                    {
+                        text: "I have a JD and MPH and have been working at CDC analyzing policy impacts on our public health programs. I think my background could be valuable in private equity since I understand healthcare regulation.",
+                        score: 5,
+                        feedback: "Good start, but you used hedging language ('I think') and didn't make a direct connection between your skills and CIL's needs."
+                    },
+                    {
+                        text: "I've spent 14 years at CDC, primarily focused on STI prevention programs. I analyze regulations like 340B, HIPAA, and state practice of medicine. Our job at CDC is to implement public health interventions while navigating complex regulatory environments.",
+                        score: 3,
+                        feedback: "Too CDC-centric. You described what you do but didn't translate it into business value for private equity."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'What makes your regulatory expertise valuable to our private equity clients?'",
+                options: [
+                    {
+                        text: "I've worked directly with regulatory agencies as they develop and implement policies. I can anticipate regulatory developments and identify both risks and opportunities that might not be obvious to those without government experience.",
+                        score: 10,
+                        feedback: "Perfect! You positioned your government experience as a competitive advantage that provides unique insight into regulatory thinking."
+                    },
+                    {
+                        text: "I understand both what regulations require AND how they actually work in practice—which is crucial for accurately assessing investment risk and opportunity. I've seen how regulations impact operations from both the regulator's side and the implementer's side.",
+                        score: 8,
+                        feedback: "Very good! You emphasized the dual perspective you bring and connected it to investment considerations."
+                    },
+                    {
+                        text: "I've been working with healthcare regulations for 14 years, so I'm very familiar with the regulatory landscape. I know a lot about 340B drug pricing, HIPAA, and healthcare reimbursement models that impact healthcare organizations.",
+                        score: 4,
+                        feedback: "This focuses on your knowledge but doesn't explain why that knowledge specifically creates value for PE investors."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'Why are you looking to leave the CDC now?'",
+                options: [
+                    {
+                        text: "I've valued my years in public health, but I'm ready to apply my analytical skills to a more dynamic environment where regulatory expertise directly impacts business outcomes. This is the natural evolution of my career toward work that creates more immediate, measurable value.",
+                        score: 10,
+                        feedback: "Excellent! You framed this as a positive career evolution rather than a reaction to circumstances, emphasizing business impact."
+                    },
+                    {
+                        text: "There's a lot of uncertainty at CDC right now with all the cuts and changes. I've been thinking about making a transition for a while, and this seemed like the right time to explore opportunities in the private sector.",
+                        score: 3,
+                        feedback: "This positions your move as reactive rather than strategic, and doesn't highlight your positive motivation for joining private equity."
+                    },
+                    {
+                        text: "I've been looking to transition for several years now but the timing wasn't right until now. I'm interested in applying my analytical skills in an environment where I can see the direct impact of my work on business outcomes.",
+                        score: 7,
+                        feedback: "Good, but could be stronger. You explained your positive motivation but could be more specific about why PE aligns with your career goals."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'Can you give me a specific example of how your regulatory analysis has created value?'",
+                options: [
+                    {
+                        text: "When analyzing proposed changes to the 340B program, I identified implementation barriers that would significantly impact covered entities. This analysis helped our stakeholders adapt their operations proactively, preserving millions in program value. In PE terms, this translates directly to protecting revenue streams during regulatory shifts.",
+                        score: 10,
+                        feedback: "Excellent! You provided a specific example with measurable impact and explicitly translated it to PE value."
+                    },
+                    {
+                        text: "I led a project analyzing state telehealth regulations during COVID. My approach balanced compliance requirements with operational efficiency, allowing our programs to maximize service delivery while managing risk. This same analytical process applies directly to optimizing portfolio company operations.",
+                        score: 8,
+                        feedback: "Very good! You showcased your analytical process and drew a clear parallel to PE application."
+                    },
+                    {
+                        text: "I've done a lot of work with 340B and healthcare privacy regulations. For example, I helped our grantees understand their compliance requirements and implement programs that meet federal guidelines while serving public health needs.",
+                        score: 4,
+                        feedback: "This describes your activities but doesn't highlight specific value created or connect it to PE interests."
+                    }
+                ]
+            },
+            {
+                question: "Jack mentioned you might be interested in the SME (Subject Matter Expert) track. Rebecca asks: 'How do you see yourself functioning in that type of role?'",
+                options: [
+                    {
+                        text: "As an SME, I would leverage my regulatory expertise to identify both risks and opportunities in potential healthcare investments. I'd guide project teams on regulatory considerations that impact valuation, advise on compliance frameworks that balance risk management with operational efficiency, and help portfolio companies navigate regulatory shifts.",
+                        score: 10,
+                        feedback: "Excellent! You clearly articulated the specific value you'd bring to CIL's teams while demonstrating understanding of the SME role."
+                    },
+                    {
+                        text: "I think the SME track makes sense for my background. I could provide my regulatory expertise to teams working on healthcare investments, helping them understand the complex regulatory environment and what it means for their clients.",
+                        score: 5,
+                        feedback: "This is a basic understanding of the role, but you used hedging language ('I think') and didn't clearly articulate specific contributions you'd make."
+                    },
+                    {
+                        text: "I've been functioning as a subject matter expert at CDC for years, so I'm comfortable in that role. I could provide insights on healthcare regulations and help CIL avoid compliance issues with their investments.",
+                        score: 3,
+                        feedback: "This focuses too narrowly on compliance and doesn't demonstrate understanding of the strategic value an SME provides in PE consulting."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'What specific regulatory areas do you think would be most valuable to our PE clients right now?'",
+                options: [
+                    {
+                        text: "Three high-value areas are 340B drug pricing, where contract pharmacy restrictions are creating market disruption; healthcare privacy compliance, where penalties can exceed $4M per violation; and value-based reimbursement models, which are reshaping provider economics. All three are experiencing significant regulatory flux and PE activity.",
+                        score: 10,
+                        feedback: "Excellent! You identified specific areas with direct investment implications and quantified the potential impact."
+                    },
+                    {
+                        text: "With the current administration, we're likely to see significant changes in healthcare reimbursement, drug pricing policy, and privacy regulations. Understanding these shifts will be important for healthcare investors.",
+                        score: 6,
+                        feedback: "Good areas identified, but you didn't articulate specific investment implications or demonstrate knowledge of current PE activity in these spaces."
+                    },
+                    {
+                        text: "I specialize in STI prevention programs, 340B drug pricing, and healthcare privacy regulations. These are all areas that healthcare organizations need to navigate carefully to maintain compliance.",
+                        score: 3,
+                        feedback: "This focuses on your expertise rather than addressing what would be valuable to PE clients specifically."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'How do you think your regulatory perspective differs from someone who has spent their career in private healthcare consulting?'",
+                options: [
+                    {
+                        text: "I've observed regulatory processes from inception through implementation—seeing not just what policies say, but how decisions are made, what factors influence enforcement priorities, and where flexibility exists in practice. This insider perspective helps anticipate regulatory developments and identify opportunities that might be missed by someone viewing regulations only from the compliance side.",
+                        score: 10,
+                        feedback: "Excellent! You highlighted the unique value of your insider perspective while acknowledging the complementary value of private sector experience."
+                    },
+                    {
+                        text: "Private sector consultants typically focus on compliance with existing regulations, while my experience includes understanding the policy development process and the government's enforcement priorities. I can see regulations from the regulator's perspective.",
+                        score: 7,
+                        feedback: "Good distinction, but you could have emphasized more specifically how this creates value for PE investment decisions."
+                    },
+                    {
+                        text: "My government background gives me a different perspective. I understand how federal agencies work and the types of considerations that go into regulatory decisions. This is knowledge that private sector consultants might not have.",
+                        score: 4,
+                        feedback: "This identifies a difference but doesn't articulate why that difference matters for PE clients or how it creates unique value."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca mentions that CIL's healthcare team works remotely but travels frequently for client meetings. She asks about your flexibility with travel.",
+                options: [
+                    {
+                        text: "I'm completely comfortable with travel as needed for client meetings and team collaboration. Having worked with stakeholders across multiple locations throughout my career, I find that a mix of remote work and in-person engagement creates the most value for complex projects.",
+                        score: 10,
+                        feedback: "Excellent! You expressed flexibility while highlighting how your experience has prepared you for this work arrangement."
+                    },
+                    {
+                        text: "I moved to Colorado for family reasons, but I'm definitely open to travel as needed for the role. I understand the importance of face-to-face client interactions in consulting work.",
+                        score: 7,
+                        feedback: "Good response showing flexibility, though you could have emphasized the value you see in the travel rather than just your willingness to do it."
+                    },
+                    {
+                        text: "I'd prefer to work remotely as much as possible, but I understand some travel would be required. How much travel is typical for this role?",
+                        score: 3,
+                        feedback: "This suggests you see travel as a negative rather than an opportunity to create value, and shifts focus to your preferences rather than client needs."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'We often need to rapidly analyze complex regulatory environments during due diligence. How would you approach a situation where you need to assess regulatory risks for a healthcare investment in just 2-3 weeks?'",
+                options: [
+                    {
+                        text: "I'd prioritize three key areas: First, identify critical regulatory dependencies affecting revenue and operations. Second, assess upcoming regulatory changes with material valuation impact. Third, evaluate the target's compliance infrastructure against enforcement priorities. This layered approach focuses resources on regulatory risks with the greatest financial implications.",
+                        score: 10,
+                        feedback: "Excellent! You outlined a structured approach focused on business impact and demonstrated understanding of PE due diligence timelines."
+                    },
+                    {
+                        text: "I would leverage my knowledge of federal and state healthcare regulations to quickly identify the most relevant compliance areas. I'd review the company's compliance history, current regulatory status, and potential areas of risk based on my experience with similar organizations.",
+                        score: 6,
+                        feedback: "Your approach is reasonable but focuses more on compliance than strategic business implications. A stronger response would prioritize regulatory risks by financial impact."
+                    },
+                    {
+                        text: "I'd conduct a thorough review of all applicable regulations and compliance requirements. My legal background and regulatory knowledge would allow me to identify potential issues and recommend compliance improvements to the client.",
+                        score: 3,
+                        feedback: "This approach doesn't acknowledge the time constraints of PE due diligence and focuses on compliance rather than investment implications."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'Our clients often need to understand both the letter of the regulation and the practical reality of enforcement. How do you stay current on both aspects?'",
+                options: [
+                    {
+                        text: "I maintain relationships with former colleagues across regulatory agencies to understand enforcement priorities and practical implementation. I combine this with analysis of enforcement actions, guidance documents, and industry responses to identify patterns in how regulations are actually applied in practice versus strictly interpreted.",
+                        score: 10,
+                        feedback: "Excellent! You highlighted both formal and informal methods of staying current, emphasizing your network and analytical approach."
+                    },
+                    {
+                        text: "I follow regulatory developments through official channels, industry publications, and enforcement case studies. My government background helps me interpret what these developments actually mean for organizations operationally.",
+                        score: 7,
+                        feedback: "Good methods mentioned, but your answer could be stronger by highlighting how you specifically track enforcement trends versus text changes."
+                    },
+                    {
+                        text: "I keep up with regulatory changes through government websites, legal updates, and healthcare industry news. I'm very thorough in my research to ensure I understand all applicable regulations.",
+                        score: 4,
+                        feedback: "This focuses on tracking formal regulations but doesn't address how you stay current on the reality of enforcement, which was a key part of the question."
+                    }
+                ]
+            },
+            {
+                question: "Rebecca asks: 'Much of our work involves quantifying the financial impact of regulatory changes. How comfortable are you with translating regulatory insights into numerical business impacts?'",
+                options: [
+                    {
+                        text: "I regularly quantify regulatory impacts by modeling how compliance requirements affect operational metrics and resource allocation. While public health uses different KPIs than PE, the analytical process is similar—identifying cost drivers, revenue implications, and operational constraints created by regulatory frameworks, then projecting their financial impact under different scenarios.",
+                        score: 10,
+                        feedback: "Excellent! You highlighted your experience with quantitative analysis while acknowledging the different metrics and drawing a clear parallel to PE needs."
+                    },
+                    {
+                        text: "I've done quantitative analysis of program impacts, though our metrics focused on public health outcomes rather than financial results. I'm comfortable with data analysis and could quickly adapt to focusing on financial metrics.",
+                        score: 6,
+                        feedback: "You acknowledged the difference in metrics, which is good, but didn't clearly demonstrate how your analytical approach translates to financial impact assessment."
+                    },
+                    {
+                        text: "I have a strong understanding of regulatory requirements and can explain their implications clearly. While I haven't focused specifically on financial analysis, I understand the importance of this perspective in private equity.",
+                        score: 3,
+                        feedback: "This answer doesn't address your comfort or experience with quantitative analysis, which was the core of the question."
+                    }
+                ]
+            }
+        ];
+
+        // Variables
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        let timerInterval;
+        let timeLeft = 30;
+        let gamesPlayed = 0;
+        let totalScore = 0;
+        let highScore = 0;
+
+        // Elements
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const scorecard = document.getElementById('scorecard');
+        const startButton = document.getElementById('startButton');
+        const submitButton = document.getElementById('submitButton');
+        const nextButton = document.getElementById('nextButton');
+        const practiceButton = document.getElementById('practiceButton');
+        const scenarioElement = document.getElementById('scenario');
+        const answerOptionsElement = document.getElementById('answerOptions');
+        const feedbackElement = document.getElementById('feedback');
+        const progressBar = document.getElementById('progress-bar');
+        const finalScoreElement = document.getElementById('finalScore');
+        const scoreBreakdownElement = document.getElementById('scoreBreakdown');
+        const recommendationElement = document.getElementById('recommendation');
+        const timerElement = document.getElementById('timer');
+        
+        // Stats elements
+        const gamesPlayedElement = document.getElementById('gamesPlayed');
+        const highScoreElement = document.getElementById('highScore');
+        const avgScoreElement = document.getElementById('avgScore');
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame);
+        submitButton.addEventListener('click', submitAnswer);
+        nextButton.addEventListener('click', nextQuestion);
+        practiceButton.addEventListener('click', restartGame);
+
+        // Load stats from localStorage if available
+        function loadStats() {
+            if (localStorage.getItem('peGameStats')) {
+                const stats = JSON.parse(localStorage.getItem('peGameStats'));
+                gamesPlayed = stats.gamesPlayed || 0;
+                totalScore = stats.totalScore || 0;
+                highScore = stats.highScore || 0;
+                
+                updateStatsDisplay();
+            }
+        }
+
+        // Save stats to localStorage
+        function saveStats() {
+            const stats = {
+                gamesPlayed: gamesPlayed,
+                totalScore: totalScore,
+                highScore: highScore
+            };
+            localStorage.setItem('peGameStats', JSON.stringify(stats));
+            updateStatsDisplay();
+        }
+
+        // Update stats display
+        function updateStatsDisplay() {
+            gamesPlayedElement.textContent = gamesPlayed;
+            highScoreElement.textContent = highScore;
+            avgScoreElement.textContent = gamesPlayed > 0 ? Math.round(totalScore / gamesPlayed) : 0;
+        }
+
+        // Start the game
+        function startGame() {
+            startScreen.classList.remove('active');
+            gameScreen.classList.add('active');
+            scorecard.style.display = 'none';
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        // Restart the game
+        function restartGame() {
+            scorecard.style.display = 'none';
+            startScreen.classList.add('active');
+        }
+
+        // Load a question
+        function loadQuestion() {
+            // Shuffle the order of scenarios for variety
+            const randomScenarios = [...scenarios].sort(() => 0.5 - Math.random());
+            const questionData = randomScenarios[currentQuestion % randomScenarios.length];
+            
+            scenarioElement.textContent = questionData.question;
+            answerOptionsElement.innerHTML = '';
+            
+            // Shuffle options
+            const shuffledOptions = [...questionData.options].sort(() => 0.5 - Math.random());
+            
+            shuffledOptions.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'answer-option';
+                optionElement.textContent = option.text;
+                optionElement.dataset.index = index;
+                optionElement.addEventListener('click', () => selectOption(optionElement, index));
+                answerOptionsElement.appendChild(optionElement);
+            });
+            
+            feedbackElement.style.display = 'none';
+            submitButton.style.display = 'block';
+            nextButton.style.display = 'none';
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestion + 1) / 10) * 100}%`;
+            
+            // Reset timer
+            timeLeft = 30;
+            updateTimer();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+            
+            selectedOption = null;
+        }
+
+        // Update timer
+        function updateTimerDisplay() {
+            timeLeft--;
+            updateTimer();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                if (selectedOption === null) {
+                    // Auto-select lowest score option if time runs out
+                    const lowestScoreIndex = findLowestScoreOptionIndex();
+                    const optionElements = document.querySelectorAll('.answer-option');
+                    selectOption(optionElements[lowestScoreIndex], lowestScoreIndex);
+                    submitAnswer();
+                }
+            }
+        }
+
+        function updateTimer() {
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            if (timeLeft <= 10) {
+                timerElement.style.color = '#dc3545';
+            } else {
+                timerElement.style.color = '#7f8c8d';
+            }
+        }
+
+        // Find the option with the lowest score
+        function findLowestScoreOptionIndex() {
+            const questionData = scenarios[currentQuestion % scenarios.length];
+            let lowestScore = Infinity;
+            let lowestIndex = 0;
+            
+            questionData.options.forEach((option, index) => {
+                if (option.score < lowestScore) {
+                    lowestScore = option.score;
+                    lowestIndex = index;
+                }
+            });
+            
+            return lowestIndex;
+        }
+
+        // Select an option
+        function selectOption(element, index) {
+            // Clear previous selections
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select the new option
+            element.classList.add('selected');
+            selectedOption = index;
+            submitButton.disabled = false;
+        }
+
+        // Submit an answer
+        function submitAnswer() {
+            clearInterval(timerInterval);
+            
+            if (selectedOption === null) return;
+            
+            const questionData = scenarios[currentQuestion % scenarios.length];
+            const selected = questionData.options[selectedOption];
+            
+            // Add score
+            score += selected.score;
+            
+            // Show feedback
+            feedbackElement.textContent = selected.feedback;
+            feedbackElement.className = 'feedback';
+            
+            if (selected.score >= 8) {
+                feedbackElement.classList.add('good-feedback');
+            } else if (selected.score >= 5) {
+                feedbackElement.classList.add('neutral-feedback');
+            } else {
+                feedbackElement.classList.add('poor-feedback');
+            }
+            
+            feedbackElement.style.display = 'block';
+            submitButton.style.display = 'none';
+            nextButton.style.display = 'block';
+        }
+
+        // Go to next question
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion >= 10) {
+                // End of game
+                showScorecard();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        // Show scorecard
+        function showScorecard() {
+            gameScreen.classList.remove('active');
+            scorecard.style.display = 'block';
+            
+            const finalScoreValue = Math.round(score / 10);
+            finalScoreElement.textContent = finalScoreValue;
+            
+            // Generate recommendations
+            let recommendation = '';
+            if (finalScoreValue >= 8) {
+                recommendation = 'Excellent! Your messaging is clear, business-focused, and effectively communicates your value to PE firms. Focus on maintaining your direct business translation while adding specific examples of measurable impact.';
+            } else if (finalScoreValue >= 6) {
+                recommendation = 'Good progress! Your messaging shows strength in some areas. To improve, focus on eliminating hedging language, translating your experience directly into business value, and quantifying the impact of your regulatory insights.';
+            } else {
+                recommendation = 'Keep practicing! Try to shift from describing your CDC work to explicitly connecting your experience to PE needs. Focus on using business terminology, eliminating hedges like "sort of" and "I think," and highlighting your insider knowledge as a competitive advantage.';
+            }
+            
+            recommendationElement.textContent = recommendation;
+            
+            // Update stats
+            gamesPlayed++;
+            totalScore += finalScoreValue;
+            highScore = Math.max(highScore, finalScoreValue);
+            saveStats();
+        }
+
+        // Initialize the game
+        loadStats();
+    </script>
+</body>
+</html>
