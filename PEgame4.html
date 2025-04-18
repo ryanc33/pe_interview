@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE Interview Practice Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .game-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .question-card {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-top: 0;
+        }
+        h2 {
+            color: #3498db;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px 10px 0;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .scenario {
+            font-style: italic;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 3px solid #3498db;
+            margin-bottom: 20px;
+        }
+        .context {
+            font-size: 14px;
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            line-height: 1.5;
+        }
+        .feedback strong {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        .good-feedback {
+            background-color: #d4edda;
+            border-left: 3px solid #28a745;
+        }
+        .neutral-feedback {
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+        }
+        .poor-feedback {
+            background-color: #f8d7da;
+            border-left: 3px solid #dc3545;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        #practiceButton {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            background-color: #2ecc71;
+        }
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .answer-option {
+            background-color: #f1f1f1;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 2px solid transparent;
+            margin-bottom: 5px;
+        }
+        .answer-option:hover {
+            background-color: #e0e0e0;
+        }
+        .selected {
+            background-color: #d5e8fd;
+            border-left: 3px solid #3498db;
+        }
+        .best-answer {
+            border: 2px solid #28a745;
+            background-color: #d4edda;
+        }
+        .key-phrase {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        #progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #progress-bar {
+            width: 0;
+            height: 10px;
+            background-color: #3498db;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        .scorecard {
+            display: none;
+            text-align: center;
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #eaecee;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .recommendation {
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .timer {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #7f8c8d;
+        }
+        .category-tag {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-right: 5px;
+        }
+        .settings-panel {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .settings-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .settings-label {
+            flex: 1;
+        }
+        .checkbox-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        .checkbox-item input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>PE Interview Practice Game</h1>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="gamesPlayed">0</div>
+                <div class="stat-label">Games</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="highScore">0</div>
+                <div class="stat-label">High Score</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="avgScore">0</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+        </div>
+
+        <div id="start-screen" class="active">
+            <h2>Ready to Practice Your PE Interview Skills?</h2>
+            <p>This game will simulate questions you might encounter during your interview with Rebecca Pigula at CIL Management.</p>
+            <p>For each scenario, choose the response that best demonstrates your regulatory expertise and its value to PE firms.</p>
+            <p><strong>New feature:</strong> After you submit an answer, the game will show you the best possible response and explain why it's effective if you didn't choose it.</p>
+            
+            <div class="settings-panel">
+                <h3>Game Settings</h3>
+                <div class="settings-row">
+                    <div class="settings-label">Number of questions:</div>
+                    <select id="questionCount">
+                        <option value="5">5 questions</option>
+                        <option value="10" selected>10 questions</option>
+                        <option value="15">15 questions</option>
+                        <option value="20">20 questions</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-label">Time per question:</div>
+                    <select id="timePerQuestion">
+                        <option value="15">15 seconds</option>
+                        <option value="30" selected>30 seconds</option>
+                        <option value="45">45 seconds</option>
+                        <option value="60">60 seconds</option>
+                        <option value="9999">No time limit</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-label">Focus areas:</div>
+                </div>
+                <div class="checkbox-container">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="value-proposition" checked>
+                        <label for="value-proposition">Value Proposition</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="career-transition" checked>
+                        <label for="career-transition">Career Transition</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="regulatory-expertise" checked>
+                        <label for="regulatory-expertise">Regulatory Expertise</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="pe-knowledge" checked>
+                        <label for="pe-knowledge">PE Knowledge</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="role-fit" checked>
+                        <label for="role-fit">Role Fit</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="practical-scenarios" checked>
+                        <label for="practical-scenarios">Practical Scenarios</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="startButton">Start Practice</button>
+        </div>
+
+        <div id="game-screen" class="question-card">
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div class="timer" id="timer">Time: 30s</div>
+            <div class="context" id="context"></div>
+            <div class="scenario" id="scenario"></div>
+            <div class="answer-options" id="answerOptions">
+                <!-- Answer options will be inserted here -->
+            </div>
+            <button id="submitButton" style="display: none;">Submit Answer</button>
+            <div class="feedback" id="feedback"></div>
+            <button id="nextButton" style="display: none;">Next Question</button>
+        </div>
+
+        <div id="scorecard" class="scorecard">
+            <h2>Practice Complete!</h2>
+            <div class="score-circle" id="finalScore">0</div>
+            <p>Your messaging effectiveness score</p>
+            <div id="scoreBreakdown"></div>
+            <div class="recommendation" id="recommendation"></div>
+            <button id="practiceButton">Practice Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game data
+        const allScenarios = [
+            // VALUE PROPOSITION QUESTIONS
+            {
+                category: "value-proposition",
+                context: "Rebecca begins the conversation by asking about your background and how it might fit with CIL's work.",
+                question: "Tell me about your background and how it relates to what we do at CIL.",
+                options: [
+                    {
+                        text: "I've been at CDC for 14 years working in healthcare policy and regulatory analysis. I assess how regulations impact operations and strategy—the same core analysis PE firms need for due diligence and valuation, just applied to different outcomes.",
+                        score: 10,
+                        feedback: "Excellent! You directly translated your experience into business value, using PE terminology like 'due diligence' and 'valuation' while drawing a clear parallel between your current work and PE needs."
+                    },
+                    {
+                        text: "I have a JD and MPH and have been working at CDC analyzing policy impacts on our public health programs. I think my background could be valuable in private equity since I understand healthcare regulation.",
+                        score: 5,
+                        feedback: "Good start mentioning your credentials, but you used hedging language ('I think') and didn't make a direct connection between your skills and CIL's specific needs in healthcare due diligence."
+                    },
+                    {
+                        text: "I've spent 14 years at CDC, primarily focused on STI prevention programs. I analyze regulations like 340B, HIPAA, and state practice of medicine. Our job at CDC is to implement public health interventions while navigating complex regulatory environments.",
+                        score: 3,
+                        feedback: "Too CDC-centric. You described what you do but didn't translate it into business value for private equity. The response focuses on public health terminology rather than investment implications."
+                    }
+                ]
+            },
+            {
+                category: "value-proposition",
+                context: "After hearing about your background, Rebecca wants to understand the specific value your regulatory expertise might bring to their clients.",
+                question: "What makes your regulatory expertise valuable to our private equity clients?",
+                options: [
+                    {
+                        text: "I've worked directly with regulatory agencies as they develop and implement policies. I can anticipate regulatory developments and identify both risks and opportunities that might not be obvious to those without government experience.",
+                        score: 10,
+                        feedback: "Perfect! You positioned your government experience as a competitive advantage that provides unique insight into regulatory thinking and directly tied it to identifying investment opportunities."
+                    },
+                    {
+                        text: "I understand both what regulations require AND how they actually work in practice—which is crucial for accurately assessing investment risk and opportunity. I've seen how regulations impact operations from both the regulator's side and the implementer's side.",
+                        score: 8,
+                        feedback: "Very good! You emphasized the dual perspective you bring and connected it to investment considerations. This shows how your expertise translates to PE decision-making."
+                    },
+                    {
+                        text: "I've been working with healthcare regulations for 14 years, so I'm very familiar with the regulatory landscape. I know a lot about 340B drug pricing, HIPAA, and healthcare reimbursement models that impact healthcare organizations.",
+                        score: 4,
+                        feedback: "This focuses only on your knowledge but doesn't explain why that knowledge specifically creates value for PE investors. You listed areas of expertise without connecting them to investment implications."
+                    }
+                ]
+            },
+            {
+                category: "value-proposition",
+                context: "Rebecca wants to understand how you would practically apply your regulatory expertise in their business context.",
+                question: "How would you translate your regulatory expertise into actionable insights for our PE clients?",
+                options: [
+                    {
+                        text: "I would identify regulatory inflection points that create investment opportunities or risks. For example, recent 340B contract pharmacy restrictions have created market disruption that savvy investors can leverage, while also introducing risks for certain business models that rely heavily on 340B margins.",
+                        score: 10,
+                        feedback: "Excellent! You provided a specific example that demonstrates both the opportunity and risk dimensions of regulatory change, showing direct application to investment decisions."
+                    },
+                    {
+                        text: "I would analyze the regulatory landscape to identify potential compliance issues and help portfolio companies implement proper compliance programs to avoid penalties and operational disruptions.",
+                        score: 5,
+                        feedback: "This response focuses too narrowly on compliance rather than strategic opportunities. While risk mitigation is important, PE firms are equally interested in how regulations create market opportunities."
+                    },
+                    {
+                        text: "I would provide detailed explanations of complex healthcare regulations so the team understands what rules apply to potential investments. I can translate technical regulatory language into terms that are easier to understand.",
+                        score: 3,
+                        feedback: "This positions you as simply a translator of regulations rather than a strategic advisor who can connect regulatory insights to business value and investment decisions."
+                    }
+                ]
+            },
+            {
+                category: "value-proposition",
+                context: "Rebecca wants to understand how you would handle a specific regulatory scenario that impacts investment value.",
+                question: "If a PE client was considering investing in a healthcare services company with significant 340B revenue, what specific value would your expertise bring to that due diligence process?",
+                options: [
+                    {
+                        text: "I would analyze three key areas: first, the sustainability of their 340B revenue given ongoing manufacturer restrictions and pending legislation; second, their compliance with program requirements that could pose financial risks; and third, opportunities to optimize their 340B strategy within regulatory boundaries. This would provide a complete picture of both risks and upside potential.",
+                        score: 10,
+                        feedback: "Excellent! You provided a structured approach that addresses both risk and opportunity, demonstrates deep knowledge of current 340B challenges, and frames your analysis in terms of investment implications."
+                    },
+                    {
+                        text: "I would review their 340B program compliance to ensure they're following all the rules correctly. The 340B program has complex eligibility requirements, and violations could result in significant penalties or program exclusion.",
+                        score: 5,
+                        feedback: "This focuses exclusively on compliance risk without addressing market opportunity or revenue sustainability, which are equally important considerations for PE investors evaluating a target company."
+                    },
+                    {
+                        text: "I would explain how the 340B program works to the PE team, including the discount percentages, eligibility criteria, and recent developments. This would help them understand this important revenue source for the target company.",
+                        score: 3,
+                        feedback: "This positions you as an educator rather than a strategic advisor. PE firms need analysis that directly impacts valuation, not just background information on how programs function."
+                    }
+                ]
+            },
+            
+            // CAREER TRANSITION QUESTIONS
+            {
+                category: "career-transition",
+                context: "Rebecca is interested in understanding your motivation for transitioning from the public health sector to private equity.",
+                question: "Why are you looking to leave the CDC now?",
+                options: [
+                    {
+                        text: "I've valued my years in public health, but I'm ready to apply my analytical skills to a more dynamic environment where regulatory expertise directly impacts business outcomes. This is the natural evolution of my career toward work that creates more immediate, measurable value.",
+                        score: 10,
+                        feedback: "Excellent! You framed this as a positive career evolution rather than a reaction to circumstances, emphasizing business impact and your proactive decision-making."
+                    },
+                    {
+                        text: "I've been looking to transition for several years now but the timing wasn't right until now. I'm interested in applying my analytical skills in an environment where I can see the direct impact of my work on business outcomes.",
+                        score: 7,
+                        feedback: "Good, but could be stronger. You explained your positive motivation but were somewhat vague about why PE specifically aligns with your career goals and why now is the right time."
+                    },
+                    {
+                        text: "There's a lot of uncertainty at CDC right now with all the cuts and changes. I've been thinking about making a transition for a while, and this seemed like the right time to explore opportunities in the private sector.",
+                        score: 3,
+                        feedback: "This positions your move as reactive rather than strategic, and focuses on pushing factors (uncertainty, cuts) rather than the positive aspects of private equity that are attracting you."
+                    }
+                ]
+            },
+            {
+                category: "career-transition",
+                context: "Rebecca wants to understand if you're committed to this career change or just exploring options.",
+                question: "How long have you been considering a move to the private sector, and particularly to consulting for PE?",
+                options: [
+                    {
+                        text: "This isn't a sudden decision. I've been strategically preparing for this transition by developing my understanding of investment frameworks and how my regulatory expertise creates value in commercial contexts. I've also been building relationships with PE professionals to better understand how my skills translate most effectively.",
+                        score: 10,
+                        feedback: "Excellent! You demonstrated thoughtful preparation and commitment to this career direction while highlighting your proactive approach to understanding the PE landscape."
+                    },
+                    {
+                        text: "I've been considering it for about a year, but have been hesitant to leave government service. I'm excited about the opportunities in private equity though, and think my skills would transfer well.",
+                        score: 6,
+                        feedback: "This shows genuine interest but suggests some ambivalence about leaving government. The hedging language ('I think') undermines your conviction about the fit between your skills and PE needs."
+                    },
+                    {
+                        text: "To be honest, I'm exploring several options right now. Private equity consulting seems interesting, and I'm also looking at opportunities in pharmaceutical policy and healthcare compliance.",
+                        score: 2,
+                        feedback: "This response suggests PE consulting is just one of many options you're considering, which raises questions about your commitment and understanding of the role. It positions you as someone still figuring out their path rather than someone who has made a deliberate choice."
+                    }
+                ]
+            },
+            {
+                category: "career-transition",
+                context: "Rebecca asks about your understanding of the cultural differences between government and consulting.",
+                question: "How do you think you'll adapt to the pace and client service orientation of consulting after years in government?",
+                options: [
+                    {
+                        text: "While government has a different rhythm, I've consistently operated with urgency when developing time-sensitive policy analyses and regulatory responses. I've also served multiple stakeholders simultaneously, balancing competing priorities and delivering actionable insights under tight deadlines—skills directly applicable to client service in consulting.",
+                        score: 10,
+                        feedback: "Excellent! You highlighted transferable skills and experiences that align with consulting demands while acknowledging the difference without being defensive. This shows self-awareness and preparation for the transition."
+                    },
+                    {
+                        text: "I'm used to working hard and can definitely adapt to a faster pace. I've always been service-oriented in my government role and believe strongly in delivering high-quality work to stakeholders, which I think will translate well to clients.",
+                        score: 6,
+                        feedback: "This shows willingness to adapt but relies on general statements rather than specific examples that demonstrate your ability to operate in a client-driven environment. The 'I think' undermines your confidence."
+                    },
+                    {
+                        text: "I know the private sector moves faster than government, and that will be an adjustment. But I'm a quick learner and am excited about the challenge of working in a more dynamic environment with different expectations.",
+                        score: 3,
+                        feedback: "This response acknowledges the differences but doesn't provide evidence of your ability to adapt successfully. It focuses on the challenge rather than demonstrating readiness and comparable experiences."
+                    }
+                ]
+            },
+            {
+                category: "career-transition",
+                context: "Rebecca wants to gauge your expectations about compensation in the private sector.",
+                question: "Moving from government to consulting typically involves a different compensation structure. What are your expectations around this?",
+                options: [
+                    {
+                        text: "I understand consulting offers different compensation opportunities, including performance-based components. I'm primarily focused on finding a role where my expertise creates significant value, with compensation that reflects that value contribution. I'm open to discussing the specific structure that makes sense for both CIL and myself.",
+                        score: 10,
+                        feedback: "Excellent! You showed flexibility while emphasizing value creation, and avoided either appearing money-driven or naive about compensation differences. This demonstrates business maturity and focus on mutual benefit."
+                    },
+                    {
+                        text: "I'm expecting a significant increase in compensation compared to government, which I believe is standard when moving to private sector consulting. My research suggests the range for someone with my experience would be around $X to $Y.",
+                        score: 4,
+                        feedback: "This response focuses too heavily on compensation expectations and comes across as primarily motivated by money rather than the role itself. Naming specific figures can also create an awkward negotiating position."
+                    },
+                    {
+                        text: "I'm really more interested in the work than the compensation. While I know consulting pays better than government, that's not my primary motivation for making this transition.",
+                        score: 6,
+                        feedback: "While this shows good intentions, it might appear naive about business realities or suggest you haven't thought through the practical aspects of the transition. It's good to show some awareness of compensation structures even if it's not your primary focus."
+                    }
+                ]
+            },
+            
+            // REGULATORY EXPERTISE QUESTIONS
+            {
+                category: "regulatory-expertise",
+                context: "Rebecca wants to understand your specific expertise in healthcare regulation.",
+                question: "What specific regulatory areas do you think would be most valuable to our PE clients right now?",
+                options: [
+                    {
+                        text: "Three high-value areas are 340B drug pricing, where contract pharmacy restrictions are creating market disruption; healthcare privacy compliance, where penalties can exceed $4M per violation; and value-based reimbursement models, which are reshaping provider economics. All three are experiencing significant regulatory flux and PE activity.",
+                        score: 10,
+                        feedback: "Excellent! You identified specific areas with direct investment implications and quantified the potential impact. This shows both domain expertise and understanding of PE priorities."
+                    },
+                    {
+                        text: "With the current administration, we're likely to see significant changes in healthcare reimbursement, drug pricing policy, and privacy regulations. Understanding these shifts will be important for healthcare investors.",
+                        score: 6,
+                        feedback: "Good areas identified, but you didn't articulate specific investment implications or demonstrate knowledge of current PE activity in these spaces. The response is somewhat generic."
+                    },
+                    {
+                        text: "I specialize in STI prevention programs, 340B drug pricing, and healthcare privacy regulations. These are all areas that healthcare organizations need to navigate carefully to maintain compliance.",
+                        score: 3,
+                        feedback: "This focuses on your expertise rather than addressing what would be valuable to PE clients specifically. It emphasizes compliance rather than investment implications and uses public health framing."
+                    }
+                ]
+            },
+            {
+                category: "regulatory-expertise",
+                context: "Rebecca asks about your experience with a specific regulatory area that impacts many healthcare investments.",
+                question: "Can you tell me about your experience with value-based care models and their regulatory frameworks?",
+                options: [
+                    {
+                        text: "I've analyzed how value-based care regulations affect provider operations and revenue models, particularly the shift from fee-for-service to quality-based reimbursement. For PE, this creates both opportunities and risks—target companies need robust quality metrics and reporting infrastructure to succeed, but those that excel can capture market share as payers consolidate networks around high-performing providers.",
+                        score: 10,
+                        feedback: "Excellent! You connected your regulatory knowledge directly to business implications, highlighting both risks and opportunities for PE investments in this space."
+                    },
+                    {
+                        text: "I've worked extensively with alternative payment models and quality measurement systems. I understand the regulatory requirements that providers must meet to participate in these programs and avoid penalties.",
+                        score: 6,
+                        feedback: "This demonstrates knowledge but focuses primarily on compliance requirements rather than strategic business implications. PE firms need to understand how these regulations affect valuation and growth opportunities."
+                    },
+                    {
+                        text: "Value-based care isn't my primary area of expertise, but I'm familiar with the basic concepts and regulatory frameworks. I could quickly get up to speed on the specific models relevant to your clients' investments.",
+                        score: 3,
+                        feedback: "This honest response acknowledges limitations but doesn't demonstrate how your other regulatory expertise might still provide value in this area. It positions you as needing to learn rather than already having transferable insights."
+                    }
+                ]
+            },
+            {
+                category: "regulatory-expertise",
+                context: "Rebecca wants to understand how you stay current with complex regulatory developments.",
+                question: "Our clients often need to understand both the letter of the regulation and the practical reality of enforcement. How do you stay current on both aspects?",
+                options: [
+                    {
+                        text: "I maintain relationships with former colleagues across regulatory agencies to understand enforcement priorities and practical implementation. I combine this with analysis of enforcement actions, guidance documents, and industry responses to identify patterns in how regulations are actually applied in practice versus strictly interpreted.",
+                        score: 10,
+                        feedback: "Excellent! You highlighted both formal and informal methods of staying current, emphasizing your network and analytical approach to understanding enforcement realities."
+                    },
+                    {
+                        text: "I follow regulatory developments through official channels, industry publications, and enforcement case studies. My government background helps me interpret what these developments actually mean for organizations operationally.",
+                        score: 7,
+                        feedback: "Good methods mentioned, but your answer could be stronger by highlighting how you specifically track enforcement trends versus text changes, and by providing examples of how this insight creates value."
+                    },
+                    {
+                        text: "I keep up with regulatory changes through government websites, legal updates, and healthcare industry news. I'm very thorough in my research to ensure I understand all applicable regulations.",
+                        score: 4,
+                        feedback: "This focuses on tracking formal regulations but doesn't address how you stay current on the reality of enforcement, which was a key part of the question. It describes passive information gathering rather than active insight development."
+                    }
+                ]
+            },
+            {
+                category: "regulatory-expertise",
+                context: "Rebecca asks for a concrete example of your regulatory analysis in action.",
+                question: "Can you give me a specific example of how your regulatory analysis has created value?",
+                options: [
+                    {
+                        text: "When analyzing proposed changes to the 340B program, I identified implementation barriers that would significantly impact covered entities. This analysis helped our stakeholders adapt their operations proactively, preserving millions in program value. In PE terms, this translates directly to protecting revenue streams during regulatory shifts.",
+                        score: 10,
+                        feedback: "Excellent! You provided a specific example with measurable impact and explicitly translated it to PE value, showing how your analysis directly affected financial outcomes."
+                    },
+                    {
+                        text: "I led a project analyzing state telehealth regulations during COVID. My approach balanced compliance requirements with operational efficiency, allowing our programs to maximize service delivery while managing risk. This same analytical process applies directly to optimizing portfolio company operations.",
+                        score: 8,
+                        feedback: "Very good! You showcased your analytical process and drew a clear parallel to PE application, though the financial impact could have been more explicitly quantified."
+                    },
+                    {
+                        text: "I've done a lot of work with 340B and healthcare privacy regulations. For example, I helped our grantees understand their compliance requirements and implement programs that meet federal guidelines while serving public health needs.",
+                        score: 4,
+                        feedback: "This describes your activities but doesn't highlight specific value created or connect it to PE interests. The use of terms like 'grantees' and 'public health needs' keeps the focus on government rather than business outcomes."
+                    }
+                ]
+            },
+            {
+                category: "regulatory-expertise",
+                context: "Rebecca is interested in your approach to translating regulatory insights into business impacts.",
+                question: "Much of our work involves quantifying the financial impact of regulatory changes. How comfortable are you with translating regulatory insights into numerical business impacts?",
+                options: [
+                    {
+                        text: "I regularly quantify regulatory impacts by modeling how compliance requirements affect operational metrics and resource allocation. While public health uses different KPIs than PE, the analytical process is similar—identifying cost drivers, revenue implications, and operational constraints created by regulatory frameworks, then projecting their financial impact under different scenarios.",
+                        score: 10,
+                        feedback: "Excellent! You highlighted your experience with quantitative analysis while acknowledging the different metrics and drawing a clear parallel to PE needs. This demonstrates both analytical capability and business translation skills."
+                    },
+                    {
+                        text: "I've done quantitative analysis of program impacts, though our metrics focused on public health outcomes rather than financial results. I'm comfortable with data analysis and could quickly adapt to focusing on financial metrics.",
+                        score: 6,
+                        feedback: "You acknowledged the difference in metrics, which is good, but didn't clearly demonstrate how your analytical approach translates to financial impact assessment. This response focuses more on willingness to learn than existing capability."
+                    },
+                    {
+                        text: "I have a strong understanding of regulatory requirements and can explain their implications clearly. While I haven't focused specifically on financial analysis, I understand the importance of this perspective in private equity.",
+                        score: 3,
+                        feedback: "This answer doesn't address your comfort or experience with quantitative analysis, which was the core of the question. It suggests you may not have experience translating regulatory insights into financial terms."
+                    }
+                ]
+            },
+            {
+                category: "regulatory-expertise",
+                context: "Rebecca is interested in how you would approach assessing a healthcare business's regulatory risk profile.",
+                question: "If you were analyzing a healthcare investment target, what regulatory red flags would you look for?",
+                options: [
+                    {
+                        text: "I focus on three categories of regulatory risk: First, revenue dependency on programs with changing rules, like 340B or special reimbursement models. Second, compliance history, especially patterns of small violations that suggest systemic issues. Third, business practices that operate in regulatory gray areas, which might be compliant now but vulnerable to enforcement shifts. Each can significantly impact valuation.",
+                        score: 10,
+                        feedback: "Excellent! You provided a structured framework that goes beyond obvious compliance issues to identify strategic regulatory risks that would affect business valuation and sustainability."
+                    },
+                    {
+                        text: "I would look for any history of regulatory violations, government investigations, or consent decrees. I'd also check if they have proper compliance programs in place and whether they're keeping up with documentation requirements for regulated activities.",
+                        score: 6,
+                        feedback: "This covers basic compliance concerns but doesn't address strategic regulatory risks or business model vulnerabilities. The focus is on past problems rather than future risks that could affect valuation."
+                    },
+                    {
+                        text: "I would ensure they're following all applicable healthcare regulations, including HIPAA, fraud and abuse laws, licensure requirements, and any specialty-specific rules. Compliance is essential to avoid penalties and operational disruptions.",
+                        score: 3,
+                        feedback: "This is a check-the-box compliance approach rather than a strategic risk assessment. It doesn't demonstrate understanding of which regulatory issues actually impact business value versus those that are merely administrative."
+                    }
+                ]
+            },
+            
+            // PE KNOWLEDGE QUESTIONS
+            {
+                category: "pe-knowledge",
+                context: "Rebecca wants to gauge your understanding of private equity due diligence processes.",
+                question: "How do you think regulatory analysis typically fits into the PE due diligence process?",
+                options: [
+                    {
+                        text: "Regulatory analysis serves three critical functions in due diligence: First, identifying risks that could affect valuation or create contingent liabilities. Second, validating revenue sustainability when business models depend on regulated pricing or reimbursement. Third, identifying growth opportunities created by regulatory change that competitors haven't yet recognized. Each directly impacts investment thesis validation.",
+                        score: 10,
+                        feedback: "Excellent! You demonstrated sophisticated understanding of how regulatory insight impacts multiple aspects of PE decision-making, going beyond compliance to address valuation drivers and competitive advantage."
+                    },
+                    {
+                        text: "Regulatory analysis is part of legal due diligence, where firms assess compliance risks to avoid investing in companies with potential violations. It's important to understand the regulatory requirements affecting the target company and any pending changes that could impact operations.",
+                        score: 5,
+                        feedback: "This shows basic understanding but places regulatory analysis solely in the legal/compliance bucket rather than recognizing its strategic importance to business model validation and valuation."
+                    },
+                    {
+                        text: "I believe PE firms need to understand the regulations affecting their investments to ensure the companies they acquire are operating legally. This helps avoid unexpected problems after acquisition.",
+                        score: 3,
+                        feedback: "This response is overly simplistic and focuses only on compliance risk avoidance rather than the strategic dimensions of regulatory analysis in PE decision-making."
+                    }
+                ]
+            },
+            {
+                category: "pe-knowledge",
+                context: "Rebecca asks about your understanding of private equity investment strategies in regulated healthcare sectors.",
+                question: "What regulatory considerations do you think PE firms should prioritize when investing in healthcare services?",
+                options: [
+                    {
+                        text: "PE firms should prioritize three areas: First, reimbursement stability—evaluating how dependent the business model is on specific payment models and their regulatory risks. Second, regulatory arbitrage opportunities—identifying areas where regulations create market inefficiencies that can be legally optimized. Third, consolidation implications—understanding how antitrust and corporate practice of medicine laws might impact roll-up strategies in fragmented sectors.",
+                        score: 10,
+                        feedback: "Excellent! You provided a sophisticated analysis that demonstrates understanding of both PE strategies and healthcare regulatory dynamics, highlighting how regulations directly impact investment approaches."
+                    },
+                    {
+                        text: "PE firms should prioritize understanding fraud and abuse laws, HIPAA requirements, licensure regulations, and the 340B program if applicable. These are the main regulatory frameworks that impact healthcare businesses.",
+                        score: 5,
+                        feedback: "This lists important regulations but doesn't connect them to investment strategy or value creation. It's a compliance-focused response rather than a strategic one that considers how regulations shape market opportunities."
+                    },
+                    {
+                        text: "PE firms should make sure the companies they're investing in have good compliance programs and aren't breaking any rules. Healthcare is highly regulated, so compliance is very important to avoid penalties.",
+                        score: 2,
+                        feedback: "This response is overly simplistic and focuses exclusively on avoiding problems rather than identifying strategic opportunities. It doesn't demonstrate understanding of how regulations shape healthcare business models and investment theses."
+                    }
+                ]
+            },
+            {
+                category: "pe-knowledge",
+                context: "Rebecca wants to gauge your understanding of investment strategies in healthcare.",
+                question: "Based on your regulatory expertise, what healthcare subsectors do you think present the most attractive investment opportunities right now?",
+                options: [
+                    {
+                        text: "I see particular opportunity in three areas: First, specialty pharmacy services adapting to 340B contract pharmacy restrictions, where new models are emerging; second, virtual care platforms that can navigate the post-COVID regulatory landscape as telehealth rules stabilize; and third, value-based care enablement services that help providers succeed under increasing risk-sharing arrangements with payers. Each is experiencing regulatory flux that creates competitive advantages for informed investors.",
+                        score: 10,
+                        feedback: "Excellent! You identified specific subsectors where regulatory change is creating investment opportunities, demonstrating both healthcare market knowledge and understanding of how regulatory dynamics influence investment attractiveness."
+                    },
+                    {
+                        text: "Healthcare technology, outpatient services, and home health are growing sectors with strong demand. These areas are less regulated than inpatient settings and offer better margins, making them attractive for PE investment.",
+                        score: 6,
+                        feedback: "While you identified some attractive sectors, your rationale was simplistic regarding regulatory considerations. The response doesn't demonstrate how your regulatory expertise specifically provides insight into these opportunities."
+                    },
+                    {
+                        text: "I'd need to learn more about current PE investment trends to answer this question effectively. My expertise is in regulatory frameworks rather than market investment strategies, but I'm eager to apply my knowledge to this context.",
+                        score: 3,
+                        feedback: "This response misses an opportunity to demonstrate how your regulatory knowledge translates to investment insight. It positions you as needing to learn rather than already having valuable perspective on market opportunities."
+                    }
+                ]
+            },
+            {
+                category: "pe-knowledge",
+                context: "Rebecca asks about your understanding of how private equity firms add value to healthcare portfolio companies.",
+                question: "How do you think your regulatory expertise could help PE firms create value in their healthcare portfolio companies post-acquisition?",
+                options: [
+                    {
+                        text: "My expertise would help in three key areas: First, optimizing reimbursement strategies within regulatory boundaries to capture currently untapped revenue. Second, streamlining compliance functions to reduce administrative costs while maintaining effective risk management. Third, identifying adjacent service opportunities created by regulatory changes that the company is well-positioned to enter. Each drives measurable financial improvement that translates directly to exit valuation.",
+                        score: 10,
+                        feedback: "Excellent! You identified specific value creation strategies that leverage regulatory expertise, connecting your knowledge directly to financial performance improvement in portfolio companies."
+                    },
+                    {
+                        text: "I could help portfolio companies ensure compliance with healthcare regulations and identify potential risks before they become problems. This would help protect the company's reputation and avoid costly penalties or operational disruptions.",
+                        score: 5,
+                        feedback: "This response focuses exclusively on risk management rather than opportunity identification or value creation. While compliance is important, PE firms are equally focused on how regulatory expertise can drive growth and operational improvement."
+                    },
+                    {
+                        text: "I could provide guidance on navigating complex healthcare regulations and help explain regulatory requirements to management teams. This would help companies understand their obligations and ensure proper implementation of compliant processes.",
+                        score: 3,
+                        feedback: "This positions you primarily as an educator rather than a strategic advisor who can drive financial performance improvement. It doesn't connect regulatory expertise to PE's primary goal of value creation."
+                    }
+                ]
+            },
+            {
+                category: "pe-knowledge",
+                context: "Rebecca is interested in your understanding of the current regulatory climate for PE healthcare investments.",
+                question: "What do you see as the most significant regulatory change on the horizon that could impact healthcare PE investments?",
+                options: [
+                    {
+                        text: "The increasing FTC scrutiny of healthcare consolidation presents both challenges and opportunities for PE. While traditional roll-up strategies face heightened antitrust review, this creates openings for innovative integration models that achieve economies of scale without triggering concentration concerns. Firms that can navigate this evolving landscape will have competitive advantages in fragmented sectors like behavioral health and specialty physician practices.",
+                        score: 10,
+                        feedback: "Excellent! You identified a significant regulatory trend and analyzed both its challenges and the strategic opportunities it creates, demonstrating sophisticated understanding of regulatory impacts on PE strategies."
+                    },
+                    {
+                        text: "The potential changes to the 340B program could significantly impact healthcare providers that rely on this revenue source. PE firms investing in hospitals or contract pharmacy services should monitor these developments closely.",
+                        score: 7,
+                        feedback: "Good identification of an important regulatory issue, but your analysis could go deeper into the specific investment implications and strategic responses available to PE firms facing this change."
+                    },
+                    {
+                        text: "Healthcare is always facing new regulations. Recently there have been changes to telehealth rules, privacy requirements, and reimbursement models. PE firms need to stay on top of these changes to ensure their portfolio companies remain compliant.",
+                        score: 3,
+                        feedback: "This response is too general and doesn't identify specific high-impact regulatory changes. It focuses on compliance rather than strategic implications and doesn't demonstrate forward-looking regulatory insight."
+                    }
+                ]
+            },
+            
+            // ROLE FIT QUESTIONS
+            {
+                category: "role-fit",
+                context: "Rebecca mentions that Jack Campbell suggested you might be interested in a Subject Matter Expert role rather than a traditional consulting track.",
+                question: "Jack mentioned you might be interested in the SME (Subject Matter Expert) track. How do you see yourself functioning in that type of role?",
+                options: [
+                    {
+                        text: "As an SME, I would leverage my regulatory expertise to identify both risks and opportunities in potential healthcare investments. I'd guide project teams on regulatory considerations that impact valuation, advise on compliance frameworks that balance risk management with operational efficiency, and help portfolio companies navigate regulatory shifts to capture market opportunities.",
+                        score: 10,
+                        feedback: "Excellent! You clearly articulated the specific value you'd bring to CIL's teams while demonstrating understanding of the SME role in creating business value, not just providing technical expertise."
+                    },
+                    {
+                        text: "I think the SME track makes sense for my background. I could provide my regulatory expertise to teams working on healthcare investments, helping them understand the complex regulatory environment and what it means for their clients.",
+                        score: 5,
+                        feedback: "This is a basic understanding of the role, but you used hedging language ('I think') and didn't clearly articulate specific contributions you'd make or how you'd create value for the firm and its clients."
+                    },
+                    {
+                        text: "I've been functioning as a subject matter expert at CDC for years, so I'm comfortable in that role. I could provide insights on healthcare regulations and help CIL avoid compliance issues with their investments.",
+                        score: 3,
+                        feedback: "This focuses too narrowly on compliance and doesn't demonstrate understanding of the strategic value an SME provides in PE consulting. It also emphasizes your CDC experience rather than future contributions."
+                    }
+                ]
+            },
+            {
+                category: "role-fit",
+                context: "Rebecca wants to understand how you would interact with client teams as a regulatory expert.",
+                question: "How would you approach collaborating with engagement teams who may not have deep regulatory expertise?",
+                options: [
+                    {
+                        text: "I would focus on translating regulatory insights into business implications rather than technical details. By framing analysis in terms of revenue impact, operational constraints, and competitive positioning, I help teams integrate regulatory considerations into their overall investment thesis without requiring them to understand complex regulatory frameworks themselves.",
+                        score: 10,
+                        feedback: "Excellent! You demonstrated understanding of how to make regulatory expertise accessible and valuable to business-focused teams, emphasizing outcomes rather than technical details."
+                    },
+                    {
+                        text: "I would educate teams on the key regulatory considerations relevant to their projects and be available to answer questions that arise. My goal would be to help them build their own regulatory knowledge over time while ensuring they don't miss important compliance issues.",
+                        score: 6,
+                        feedback: "This positions you primarily as an educator rather than a strategic collaborator. While knowledge sharing is important, PE teams need regulatory insights translated into business implications more than technical education."
+                    },
+                    {
+                        text: "I would provide detailed analysis of applicable regulations and identify potential compliance concerns. I'd make sure the team understands all the regulatory requirements affecting their client's investment to avoid any overlooked issues.",
+                        score: 3,
+                        feedback: "This approach focuses too heavily on technical details and compliance rather than strategic partnership. It doesn't recognize that engagement teams need business-focused insights rather than regulatory education."
+                    }
+                ]
+            },
+            {
+                category: "role-fit",
+                context: "Rebecca mentions that CIL's SMEs often contribute to business development efforts alongside their advisory work.",
+                question: "Our SMEs often help with business development by demonstrating their expertise to potential clients. How comfortable would you be with this aspect of the role?",
+                options: [
+                    {
+                        text: "I'm very comfortable translating complex regulatory insights into business value during client discussions. I've regularly presented to diverse stakeholders, focusing on practical implications rather than technical details. My approach emphasizes how regulatory expertise can uncover hidden opportunities and mitigate risks that directly impact investment returns.",
+                        score: 10,
+                        feedback: "Excellent! You connected your experience to the business development function, emphasizing value creation for clients rather than just technical knowledge. This shows you understand the commercial aspect of the SME role."
+                    },
+                    {
+                        text: "I'm comfortable sharing my expertise with clients. I've given presentations on regulatory topics to various audiences and can explain complex regulations in understandable terms.",
+                        score: 6,
+                        feedback: "This shows presentation experience but doesn't demonstrate understanding of how to leverage expertise specifically for business development purposes. The focus remains on explanation rather than value demonstration."
+                    },
+                    {
+                        text: "While my primary strength is analysis rather than sales, I could certainly explain regulatory considerations to clients when needed. I prefer to focus on the technical work rather than business development, but understand it's part of the role.",
+                        score: 3,
+                        feedback: "This response creates an unnecessary division between expertise and business development, potentially raising concerns about your willingness to engage in this crucial aspect of the SME role at a consulting firm."
+                    }
+                ]
+            },
+            {
+                category: "role-fit",
+                context: "Rebecca mentions that CIL's healthcare team works remotely but travels frequently for client meetings. She asks about your flexibility with travel.",
+                question: "Our healthcare team works remotely but travels frequently for client meetings. How do you feel about this arrangement?",
+                options: [
+                    {
+                        text: "I'm completely comfortable with travel as needed for client meetings and team collaboration. Having worked with stakeholders across multiple locations throughout my career, I find that a mix of remote work and in-person engagement creates the most value for complex projects.",
+                        score: 10,
+                        feedback: "Excellent! You expressed flexibility while highlighting how your experience has prepared you for this work arrangement, focusing on value creation rather than personal preferences."
+                    },
+                    {
+                        text: "I moved to Colorado for family reasons, but I'm definitely open to travel as needed for the role. I understand the importance of face-to-face client interactions in consulting work.",
+                        score: 7,
+                        feedback: "Good response showing flexibility, though you could have emphasized the value you see in the travel rather than just your willingness to do it. Starting with personal circumstances rather than business needs slightly weakens the response."
+                    },
+                    {
+                        text: "I'd prefer to work remotely as much as possible, but I understand some travel would be required. How much travel is typical for this role?",
+                        score: 3,
+                        feedback: "This suggests you see travel as a negative rather than an opportunity to create value, and shifts focus to your preferences rather than client needs. In consulting, client service orientation is essential."
+                    }
+                ]
+            },
+            {
+                category: "role-fit",
+                context: "Rebecca wants to understand your long-term career aspirations and how they align with CIL.",
+                question: "How do you see your career evolving if you join CIL in an SME capacity?",
+                options: [
+                    {
+                        text: "Initially, I'd focus on applying my regulatory expertise to create immediate value across healthcare projects while developing deeper understanding of PE investment processes. Over time, I'm interested in expanding my contribution to include broader strategic advisory work, potentially evolving toward a hybrid role that combines regulatory insight with investment strategy. The path would naturally follow where I create the most value for clients.",
+                        score: 10,
+                        feedback: "Excellent! You outlined a thoughtful progression that balances immediate contribution with growth potential, focusing on value creation while showing ambition aligned with business needs."
+                    },
+                    {
+                        text: "I'd like to learn more about private equity and potentially move into a more traditional consulting track over time. The SME role seems like a good entry point, but I'd be open to taking on more client-facing responsibilities as I develop my skills.",
+                        score: 6,
+                        feedback: "This shows ambition but might suggest you see the SME role as merely a stepping stone rather than valuable in itself. It focuses more on your desires than on how your evolution would benefit CIL and its clients."
+                    },
+                    {
+                        text: "I'm primarily interested in applying my regulatory expertise in a new context. I haven't thought too much about long-term career progression yet—I'm more focused on finding a role where my current knowledge and skills can add value.",
+                        score: 4,
+                        feedback: "This response may raise concerns about your career planning and ambition. While it shows focus on immediate contribution, it doesn't demonstrate strategic thinking about your own development or how you might grow with the firm."
+                    }
+                ]
+            },
+            
+            // PRACTICAL SCENARIOS
+            {
+                category: "practical-scenarios",
+                context: "Rebecca presents a hypothetical due diligence scenario to gauge your analytical approach.",
+                question: "We often need to rapidly analyze complex regulatory environments during due diligence. How would you approach a situation where you need to assess regulatory risks for a healthcare investment in just 2-3 weeks?",
+                options: [
+                    {
+                        text: "I'd prioritize three key areas: First, identify critical regulatory dependencies affecting revenue and operations. Second, assess upcoming regulatory changes with material valuation impact. Third, evaluate the target's compliance infrastructure against enforcement priorities. This layered approach focuses resources on regulatory risks with the greatest financial implications.",
+                        score: 10,
+                        feedback: "Excellent! You outlined a structured approach focused on business impact and demonstrated understanding of PE due diligence timelines and priorities. Your method efficiently targets the most value-relevant regulatory issues."
+                    },
+                    {
+                        text: "I would leverage my knowledge of federal and state healthcare regulations to quickly identify the most relevant compliance areas. I'd review the company's compliance history, current regulatory status, and potential areas of risk based on my experience with similar organizations.",
+                        score: 6,
+                        feedback: "Your approach is reasonable but focuses more on compliance than strategic business implications. A stronger response would prioritize regulatory risks by financial impact and distinguish between critical and secondary issues given the time constraint."
+                    },
+                    {
+                        text: "I'd conduct a thorough review of all applicable regulations and compliance requirements. My legal background and regulatory knowledge would allow me to identify potential issues and recommend compliance improvements to the client.",
+                        score: 3,
+                        feedback: "This approach doesn't acknowledge the time constraints of PE due diligence and focuses on compliance rather than investment implications. It suggests a comprehensive review that might not be feasible in 2-3 weeks."
+                    }
+                ]
+            },
+            {
+                category: "practical-scenarios",
+                context: "Rebecca presents a scenario about a portfolio company facing a regulatory challenge.",
+                question: "A PE client's portfolio company is facing significant revenue impact from recent changes to the 340B program. How would you help them analyze and respond to this situation?",
+                options: [
+                    {
+                        text: "I'd start by quantifying the financial exposure across three dimensions: immediate revenue at risk, contract pharmacy optimization opportunities, and alternative reimbursement strategies. Then I'd develop a prioritized action plan focusing on manufacturer-specific strategies, contract restructuring options, and operational changes to preserve program eligibility. This approach balances short-term revenue protection with sustainable program participation.",
+                        score: 10,
+                        feedback: "Excellent! You provided a comprehensive approach that addresses both immediate financial impact and strategic options, demonstrating deep 340B knowledge and business focus."
+                    },
+                    {
+                        text: "I would review the specific 340B program changes affecting the company and assess their compliance with current requirements. I'd then recommend adjustments to ensure they maintain eligibility while minimizing disruption to their operations.",
+                        score: 6,
+                        feedback: "This response focuses primarily on compliance rather than strategic business response. While maintaining eligibility is important, it doesn't address the revenue impact or identify opportunities to optimize within the new constraints."
+                    },
+                    {
+                        text: "I'd explain the changing 340B landscape to the client and help them understand the legal challenges to these changes. There are ongoing lawsuits about manufacturer restrictions, so the regulatory environment remains uncertain.",
+                        score: 3,
+                        feedback: "This response is informational rather than action-oriented. It doesn't provide concrete strategies to address the revenue impact or demonstrate how your expertise would create tangible value in this situation."
+                    }
+                ]
+            },
+            {
+                category: "practical-scenarios",
+                context: "Rebecca presents a scenario involving a complicated multi-state regulatory analysis.",
+                question: "A client is considering a nationwide roll-up of specialty physician practices. How would you help them navigate the varying state regulatory landscapes?",
+                options: [
+                    {
+                        text: "I'd develop a state regulatory framework focusing on three critical areas: corporate practice of medicine restrictions, reimbursement variations, and scope of practice limitations. I'd then create a tiered market entry strategy, prioritizing states with favorable regulatory environments while developing tailored structures for complex states. This approach accelerates value creation while managing regulatory risk across the portfolio.",
+                        score: 10,
+                        feedback: "Excellent! You provided a strategic approach that turns regulatory complexity into an acquisition framework, demonstrating how regulatory expertise can directly shape investment strategy rather than just identifying compliance requirements."
+                    },
+                    {
+                        text: "I would analyze each state's requirements for physician practice ownership, licensing, and supervision. This would help identify which states have restrictions that might complicate the roll-up strategy and require special corporate structures.",
+                        score: 6,
+                        feedback: "This identifies important regulatory considerations but doesn't translate them into a strategic approach. It presents regulation as a hurdle to overcome rather than a factor that should shape the investment thesis and acquisition priorities."
+                    },
+                    {
+                        text: "I'd research the regulations in each state where they're considering acquisitions and create a compliance checklist. This would ensure they understand all the legal requirements before proceeding with acquisitions in each market.",
+                        score: 3,
+                        feedback: "This response treats regulation as a compliance exercise rather than a strategic consideration. It doesn't demonstrate how regulatory analysis can add value to the investment thesis or acquisition strategy."
+                    }
+                ]
+            },
+            {
+                category: "practical-scenarios",
+                context: "Rebecca presents a scenario involving healthcare privacy regulations.",
+                question: "A PE client is considering investing in a healthcare data analytics company. What privacy regulatory considerations would you highlight in your due diligence?",
+                options: [
+                    {
+                        text: "Beyond basic HIPAA compliance, I'd evaluate three strategic privacy dimensions: First, their data licensing arrangements with providers to ensure valid BAAs and proper consent flows. Second, their de-identification methodology against evolving FTC standards and state privacy laws. Third, their ability to adapt to emerging cross-border data transfer restrictions. Each directly impacts both risk profile and growth potential across different customer segments.",
+                        score: 10,
+                        feedback: "Excellent! You provided sophisticated analysis that goes beyond compliance to address strategic business implications, demonstrating deep understanding of privacy regulation as both a risk and a potential competitive advantage."
+                    },
+                    {
+                        text: "I would focus on HIPAA compliance, including their status as a business associate, data security measures, and breach notification procedures. I'd also look at whether they have appropriate patient consent for data usage and their policies for data de-identification.",
+                        score: 6,
+                        feedback: "This covers basic compliance concerns but doesn't address how privacy regulations strategically impact the business model or growth potential. A stronger response would connect privacy requirements to valuation drivers."
+                    },
+                    {
+                        text: "I'd make sure they understand healthcare privacy laws and have implemented proper safeguards for protected health information. They should have robust security measures and clear policies for handling sensitive data.",
+                        score: 3,
+                        feedback: "This response is too general and doesn't demonstrate specialized knowledge of healthcare data analytics privacy considerations. It positions you as offering basic compliance advice rather than strategic regulatory insight."
+                    }
+                ]
+            },
+            {
+                category: "practical-scenarios",
+                context: "Rebecca presents a scenario about regulatory strategy for a portfolio company.",
+                question: "A client's portfolio company is developing a digital health product that may require FDA clearance. How would you advise them on their regulatory strategy?",
+                options: [
+                    {
+                        text: "I'd first assess whether they can architect the product to qualify under FDA enforcement discretion policies while maintaining key functionality. If clearance is necessary, I'd evaluate the 510(k) vs. De Novo pathways based on existing predicates and the competitive landscape. This approach balances speed-to-market with regulatory certainty, directly impacting both burn rate and revenue timing—critical factors for their growth targets and next funding round.",
+                        score: 10,
+                        feedback: "Excellent! You balanced technical regulatory knowledge with strategic business considerations, demonstrating how regulatory pathways directly impact financial outcomes and investment returns."
+                    },
+                    {
+                        text: "I would help them determine whether their product meets the definition of a medical device and which classification it falls under. Based on this assessment, we could identify the appropriate regulatory pathway and documentation requirements for FDA submission.",
+                        score: 6,
+                        feedback: "This shows basic knowledge of FDA processes but doesn't connect regulatory strategy to business implications. It focuses on compliance requirements rather than how regulatory choices impact market timing, competitive positioning, and valuation."
+                    },
+                    {
+                        text: "I'd recommend they consult with FDA regulatory experts who specialize in digital health products. This is a complex area with evolving requirements, and they need specialized guidance to navigate the clearance process successfully.",
+                        score: 3,
+                        feedback: "This defers to external experts rather than demonstrating your ability to provide valuable regulatory insight. While collaboration with specialists may be appropriate, PE consulting requires you to provide initial strategic guidance."
+                    }
+                ]
+            }
+        ];
+
+        // Variables
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        let timerInterval;
+        let timeLeft = 30;
+        let gamesPlayed = 0;
+        let totalScore = 0;
+        let highScore = 0;
+        let questionCount = 10;
+        let timePerQuestion = 30;
+        let activeScenarios = [];
+
+        // Elements
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const scorecard = document.getElementById('scorecard');
+        const startButton = document.getElementById('startButton');
+        const submitButton = document.getElementById('submitButton');
+        const nextButton = document.getElementById('nextButton');
+        const practiceButton = document.getElementById('practiceButton');
+        const contextElement = document.getElementById('context');
+        const scenarioElement = document.getElementById('scenario');
+        const answerOptionsElement = document.getElementById('answerOptions');
+        const feedbackElement = document.getElementById('feedback');
+        const progressBar = document.getElementById('progress-bar');
+        const finalScoreElement = document.getElementById('finalScore');
+        const scoreBreakdownElement = document.getElementById('scoreBreakdown');
+        const recommendationElement = document.getElementById('recommendation');
+        const timerElement = document.getElementById('timer');
+        const questionCountSelect = document.getElementById('questionCount');
+        const timePerQuestionSelect = document.getElementById('timePerQuestion');
+        
+        // Stats elements
+        const gamesPlayedElement = document.getElementById('gamesPlayed');
+        const highScoreElement = document.getElementById('highScore');
+        const avgScoreElement = document.getElementById('avgScore');
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame);
+        submitButton.addEventListener('click', submitAnswer);
+        nextButton.addEventListener('click', nextQuestion);
+        practiceButton.addEventListener('click', restartGame);
+
+        // Load stats from localStorage if available
+        function loadStats() {
+            if (localStorage.getItem('peGameStats')) {
+                const stats = JSON.parse(localStorage.getItem('peGameStats'));
+                gamesPlayed = stats.gamesPlayed || 0;
+                totalScore = stats.totalScore || 0;
+                highScore = stats.highScore || 0;
+                
+                updateStatsDisplay();
+            }
+        }
+
+        // Save stats to localStorage
+        function saveStats() {
+            const stats = {
+                gamesPlayed: gamesPlayed,
+                totalScore: totalScore,
+                highScore: highScore
+            };
+            localStorage.setItem('peGameStats', JSON.stringify(stats));
+            updateStatsDisplay();
+        }
+
+        // Update stats display
+        function updateStatsDisplay() {
+            gamesPlayedElement.textContent = gamesPlayed;
+            highScoreElement.textContent = highScore;
+            avgScoreElement.textContent = gamesPlayed > 0 ? Math.round(totalScore / gamesPlayed) : 0;
+        }
+
+        // Filter scenarios based on selected categories
+        function filterScenarios() {
+            const categories = [];
+            document.querySelectorAll('.checkbox-item input:checked').forEach(checkbox => {
+                categories.push(checkbox.id);
+            });
+            
+            return allScenarios.filter(scenario => {
+                // If scenario's category is in the selected categories or its category has a dash
+                // (indicating it's a subcategory of a main category)
+                return categories.some(cat => scenario.category === cat || 
+                                           scenario.category.startsWith(cat + '-'));
+            });
+        }
+
+        // Start the game
+        function startGame() {
+            // Get game settings
+            questionCount = parseInt(questionCountSelect.value);
+            timePerQuestion = parseInt(timePerQuestionSelect.value);
+            
+            // Filter scenarios based on selected categories
+            const filteredScenarios = filterScenarios();
+            
+            // If no scenarios match the filters, alert the user
+            if (filteredScenarios.length === 0) {
+                alert("Please select at least one category to continue.");
+                return;
+            }
+            
+            // Get previously played questions
+            let playedQuestions = [];
+            try {
+                playedQuestions = JSON.parse(localStorage.getItem('peGamePlayedQuestions') || '[]');
+                // Keep only the 20 most recent questions to allow for eventual replay
+                if (playedQuestions.length > 20) {
+                    playedQuestions = playedQuestions.slice(-20);
+                }
+            } catch (e) {
+                // Reset if there's an error
+                playedQuestions = [];
+            }
+            
+            // Prioritize questions that haven't been played recently
+            const notRecentlyPlayed = filteredScenarios.filter(scenario => 
+                !playedQuestions.includes(scenario.question));
+            
+            // Shuffle both arrays 
+            const shuffledNew = [...notRecentlyPlayed].sort(() => 0.5 - Math.random());
+            const shuffledPlayed = [...filteredScenarios.filter(scenario => 
+                playedQuestions.includes(scenario.question))].sort(() => 0.5 - Math.random());
+            
+            // Combine them: prioritize new questions, then use previously played if needed
+            let selectedScenarios = [...shuffledNew];
+            
+            // If we don't have enough new questions, add some previously played ones
+            if (selectedScenarios.length < questionCount) {
+                selectedScenarios = selectedScenarios.concat(
+                    shuffledPlayed.slice(0, questionCount - selectedScenarios.length)
+                );
+            }
+            
+            // Take the requested number of questions
+            activeScenarios = selectedScenarios.slice(0, questionCount);
+            
+            // If we still don't have enough scenarios, just use what we have
+            if (activeScenarios.length < questionCount) {
+                questionCount = activeScenarios.length;
+            }
+            
+            // Track these questions as played
+            const newPlayedQuestions = [
+                ...playedQuestions,
+                ...activeScenarios.map(scenario => scenario.question)
+            ];
+            localStorage.setItem('peGamePlayedQuestions', JSON.stringify(newPlayedQuestions));
+            
+            startScreen.classList.remove('active');
+            gameScreen.classList.add('active');
+            scorecard.style.display = 'none';
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        // Restart the game
+        function restartGame() {
+            scorecard.style.display = 'none';
+            startScreen.classList.add('active');
+        }
+
+        // Load a question
+        function loadQuestion() {
+            const questionData = activeScenarios[currentQuestion];
+            
+            contextElement.textContent = questionData.context;
+            scenarioElement.textContent = questionData.question;
+            answerOptionsElement.innerHTML = '';
+            
+            // Create a mapping of shuffled options to original indices
+            const originalOptions = questionData.options;
+            const shuffledOptions = [...originalOptions].sort(() => 0.5 - Math.random());
+            
+            // Create a map to track which shuffled option corresponds to which original option
+            const optionMap = new Map();
+            
+            shuffledOptions.forEach((shuffledOption, displayIndex) => {
+                // Find the original index of this option
+                const originalIndex = originalOptions.findIndex(opt => opt.text === shuffledOption.text);
+                
+                // Store the mapping
+                optionMap.set(displayIndex, originalIndex);
+                
+                const optionElement = document.createElement('div');
+                optionElement.className = 'answer-option';
+                optionElement.textContent = shuffledOption.text;
+                // Store both the display index and original index
+                optionElement.dataset.displayIndex = displayIndex;
+                optionElement.dataset.originalIndex = originalIndex;
+                optionElement.addEventListener('click', () => selectOption(optionElement, displayIndex, originalIndex));
+                answerOptionsElement.appendChild(optionElement);
+            });
+            
+            // Store the option map on the window for access in other functions
+            window.currentOptionMap = optionMap;
+            
+            feedbackElement.style.display = 'none';
+            submitButton.style.display = 'block';
+            nextButton.style.display = 'none';
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestion + 1) / questionCount) * 100}%`;
+            
+            // Reset timer
+            timeLeft = timePerQuestion;
+            updateTimer();
+            if (timerInterval) clearInterval(timerInterval);
+            
+            // Only start timer if timePerQuestion is not set to "No time limit"
+            if (timePerQuestion < 9999) {
+                timerInterval = setInterval(updateTimerDisplay, 1000);
+                timerElement.style.display = 'block';
+            } else {
+                timerElement.style.display = 'none';
+            }
+            
+            selectedOption = null;
+        }
+
+        // Update timer
+        function updateTimerDisplay() {
+            timeLeft--;
+            updateTimer();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                if (selectedOption === null) {
+                    // Auto-select lowest score option if time runs out
+                    const lowestScoreIndex = findLowestScoreOptionIndex();
+                    const optionElements = document.querySelectorAll('.answer-option');
+                    if (optionElements[lowestScoreIndex]) {
+                        const originalIndex = parseInt(optionElements[lowestScoreIndex].dataset.originalIndex);
+                        selectOption(optionElements[lowestScoreIndex], lowestScoreIndex, originalIndex);
+                        submitAnswer();
+                    }
+                }
+            }
+        }
+
+        function updateTimer() {
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            if (timeLeft <= 10) {
+                timerElement.style.color = '#dc3545';
+            } else {
+                timerElement.style.color = '#7f8c8d';
+            }
+        }
+
+        // Find the option with the lowest score
+        function findLowestScoreOptionIndex() {
+            const questionData = activeScenarios[currentQuestion];
+            const options = document.querySelectorAll('.answer-option');
+            let lowestScore = Infinity;
+            let lowestIndex = 0;
+            
+            for (let i = 0; i < options.length; i++) {
+                const originalIndex = parseInt(options[i].dataset.originalIndex);
+                if (!isNaN(originalIndex) && questionData.options[originalIndex]) {
+                    const option = questionData.options[originalIndex];
+                    if (option.score < lowestScore) {
+                        lowestScore = option.score;
+                        lowestIndex = i;
+                    }
+                }
+            }
+            
+            return lowestIndex;
+        }
+
+        // Select an option
+        function selectOption(element, displayIndex, originalIndex) {
+            // Clear previous selections
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select the new option
+            element.classList.add('selected');
+            selectedOption = {
+                displayIndex: displayIndex,
+                originalIndex: originalIndex
+            };
+            submitButton.disabled = false;
+            submitButton.style.display = 'block';
+        }
+
+        // Submit an answer
+        function submitAnswer() {
+            clearInterval(timerInterval);
+            
+            if (selectedOption === null) return;
+            
+            const questionData = activeScenarios[currentQuestion];
+            // Use the originalIndex to get the correct option
+            const selected = questionData.options[selectedOption.originalIndex];
+            
+            // Find the best option
+            let bestOption = questionData.options[0];
+            let bestOptionIndex = 0;
+            questionData.options.forEach((option, idx) => {
+                if (option.score > bestOption.score) {
+                    bestOption = option;
+                    bestOptionIndex = idx;
+                }
+            });
+            
+            // Add score
+            score += selected.score;
+            
+            // Prepare feedback
+            let feedbackText = '';
+            
+            // Check if the selected option is actually the best option
+            const selectedIsBest = selected.score === bestOption.score;
+            
+            // Only show the selected feedback (which will be the best feedback if selected is best)
+            feedbackText = selected.feedback;
+            
+            // If the selected option wasn't the best, add information about the best option
+            if (!selectedIsBest) {
+                feedbackText += "<br><br><strong>Best Answer:</strong> \"" + bestOption.text + "\"<br><strong>Why it's better:</strong> " + bestOption.feedback;
+            }
+            
+            // Show feedback
+            feedbackElement.innerHTML = feedbackText;
+            feedbackElement.className = 'feedback';
+            
+            if (selected.score >= 8) {
+                feedbackElement.classList.add('good-feedback');
+            } else if (selected.score >= 5) {
+                feedbackElement.classList.add('neutral-feedback');
+            } else {
+                feedbackElement.classList.add('poor-feedback');
+            }
+            
+            // Highlight the best answer only if you didn't select it
+            if (!selectedIsBest) {
+                const options = document.querySelectorAll('.answer-option');
+                options.forEach(option => {
+                    const optionOriginalIndex = parseInt(option.dataset.originalIndex);
+                    if (optionOriginalIndex === bestOptionIndex) {
+                        option.classList.add('best-answer');
+                    }
+                });
+            }
+            
+            feedbackElement.style.display = 'block';
+            submitButton.style.display = 'none';
+            nextButton.style.display = 'block';
+            
+            // Disable clicking on options
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+        }
+
+        // Go to next question
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion >= questionCount) {
+                // End of game
+                showScorecard();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        // Show scorecard
+        function showScorecard() {
+            gameScreen.classList.remove('active');
+            scorecard.style.display = 'block';
+            
+            const finalScoreValue = Math.round(score / questionCount);
+            finalScoreElement.textContent = finalScoreValue;
+            
+            // Generate recommendations
+            let recommendation = '';
+            if (finalScoreValue >= 8) {
+                recommendation = 'Excellent! Your messaging is clear, business-focused, and effectively communicates your value to PE firms. You consistently translate your regulatory expertise into investment implications and demonstrate understanding of how your knowledge creates competitive advantage in due diligence and value creation.';
+            } else if (finalScoreValue >= 6) {
+                recommendation = 'Good progress! Your messaging shows strength in some areas. To improve, focus on eliminating hedging language, translating your experience directly into business value, and quantifying the impact of your regulatory insights. Consider structuring responses to highlight both risk and opportunity dimensions of regulatory changes.';
+            } else {
+                recommendation = 'Keep practicing! Try to shift from describing your CDC work to explicitly connecting your experience to PE needs. Focus on using business terminology, eliminating hedges like "sort of" and "I think," and highlighting your insider knowledge as a competitive advantage. Remember that PE firms value regulatory expertise for both risk management AND opportunity identification.';
+            }
+            
+            recommendationElement.textContent = recommendation;
+            
+            // Update stats
+            gamesPlayed++;
+            totalScore += finalScoreValue;
+            highScore = Math.max(highScore, finalScoreValue);
+            saveStats();
+        }
+
+        // Initialize the game
+        loadStats();
+    </script>
+</body>
+</html>
